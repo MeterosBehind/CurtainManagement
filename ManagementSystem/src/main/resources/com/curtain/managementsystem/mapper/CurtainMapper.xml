@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.curtain.managementsystem.mapper.CurtainMapper">
+    <resultMap id="CurtainMap" type="com.curtain.managementsystem.domains.Curtain">
+        <id property="id" column="id" javaType="int" jdbcType="NUMERIC"/>
+        <result property="name" column="name" jdbcType="VARCHAR" javaType="String"/>
+        <result property="type" column="type" jdbcType="VARCHAR" javaType="String"/>
+        <result property="texture" column="texture" jdbcType="VARCHAR" javaType="String"/>
+        <result property="introduction" column="introduction" jdbcType="VARCHAR" javaType="String"/>
+        <result property="price" column="price" javaType="double" jdbcType="DOUBLE"/>
+        <result property="market_time" column="market_time" javaType="Date" jdbcType="DATE"/>
+        <result property="created_time" column="created_time" javaType="Date" jdbcType="DATE"/>
+        <result property="last_updated_time" column="last_updated_time" javaType="Date" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="getCurtainInfoMapper" resultMap="CurtainMap">
+        select * from curtain_info
+    </select>
+</mapper>
