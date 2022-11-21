@@ -3,9 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>窗帘信息管理页面</title>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/axios.min.js"></script>
 </head>
 <body>
 <h1>欢迎使用窗帘信息管理系统！</h1>
 <a href="/info">查询窗帘信息！</a>
+<p id="curtainInfo">窗帘信息</p>
+<button id="curtainAdd">新增窗帘</button>
+<button id="curtainDelete">删除窗帘</button>
+<button id="curtainEdit">编辑窗帘</button>
+<button id="curtainDetail">窗帘详细信息</button>
+<p>
+<table border="1" cellspacing="0">
+    <tr>
+        <th><input type="checkbox" name="ck" value="0"></th>
+        <th width="50px">序号</th>
+        <th width="200px">名称</th>
+        <th width="400px">简介</th>
+        <th width="200px">价格</th>
+        <th width="200px">操作</th>
+    </tr>
+</table>
+<script>
+    window.onload =function() {  //一加载界面就调用
+        var list = [];
+        $.ajax({
+            url:"/info",
+            dataType:"json",
+            type:"get",
+            async:false,
+            success:function(data){
+                list = data;
+            }});
+        console.log(list);
+        $(list).each(function(i, ele) {
+            var $tr = $('<tr><td><input type="checkbox" name="ck" value="'+ (i+1) +'"></td><td>' + (i + 1) + '</td><td class="name">' +
+                ele.name + '</td><td>'+ ele.introduction + '</td><td>'+ ele.price + '</td><td>1</td>></tr>');
+            $('table').append($tr);
+            // console.log(i);
+            // console.log(list[i].title);
+        });
+    };
+    $("#curtainAdd").click(function (){
+        console.log("新增！");
+        $.ajax({
+            url:"/add",
+            dataType:"json",
+            type:"get",
+            success:function(){
+                window.alert("新增窗帘信息成功！");
+            },
+            error:function (res){
+                console.log("错误："+res);
+            }
+        });
+    })
+</script>
 </body>
 </html>
