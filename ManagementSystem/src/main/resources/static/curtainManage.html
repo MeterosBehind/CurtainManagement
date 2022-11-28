@@ -18,9 +18,9 @@
 <a href="/info">查询窗帘信息！</a>
 <p id="curtainInfo">窗帘信息</p>
 <button id="curtainAdd">新增窗帘</button>
-<button id="curtainDelete">删除窗帘</button>
-<button id="curtainEdit">编辑窗帘</button>
-<button id="curtainDetail">窗帘详细信息</button>
+<button id="curtainDelete" disabled>删除窗帘</button>
+<button id="curtainEdit" disabled>编辑窗帘</button>
+<button id="curtainDetail" disabled>窗帘详细信息</button>
 <p>
 <table border="1" cellspacing="0">
     <tr>
@@ -29,6 +29,20 @@
         <th width="200px">名称</th>
         <th width="400px">简介</th>
         <th width="200px">价格</th>
+    </tr>
+    <tr>
+        <td><input type="checkbox" name="ck" value="11" onclick="fxk()"></td>
+        <td>11</td>
+        <td>窗帘11</td>
+        <td>简介</td>
+        <td>11</td>
+    </tr>
+    <tr>
+        <td><input type="checkbox" name="ck" value="12" onclick="fxk()"></td>
+        <td>12</td>
+        <td>窗帘12</td>
+        <td>简介</td>
+        <td>12</td>
     </tr>
 </table>
 
@@ -63,13 +77,36 @@
             }});
         console.log(list);
         $(list).each(function(i, ele) {
-            var $tr = $('<tr><td><input type="checkbox" name="ck" value="'+ (i+1) +'"></td><td>' + (i + 1) + '</td><td class="name">' +
+            var $tr = $('<tr><td><input type="checkbox" name="ck" onclick="fxk()" value="'+ (i+1) +'"></td><td>' + (i + 1) + '</td><td class="name">' +
                 ele.name + '</td><td>'+ ele.introduction + '</td><td>'+ ele.price + '</td></tr>');
             $('table').append($tr);
         });
-        $('table').append($('<tr><td><input type="checkbox" name="ck" value="10"></td><td>10</td><td>窗帘10</td><td>简介</td><td>12</td>'))
+        $('table').append($('<tr><td><input type="checkbox" name="ck" value="10" onclick="fxk()"></td><td>10</td><td>窗帘10</td><td>简介</td><td>12</td></tr>'))
+    };
+    function fxk(){
+        var cks = document.getElementsByName("ck");
+        var cksLength = 0;
+        for(var i=0;i<cks.length;i++){
+            if(cks[i].checked==true){
+                cksLength++;
+            }
+        }
+        console.log("点击复选框，已选中数量："+cksLength);
+        if(cksLength==1){
+            document.getElementById("curtainEdit").disabled=false;
+            document.getElementById("curtainDetail").disabled=false;
+        }else {
+            document.getElementById("curtainEdit").disabled=true;
+            document.getElementById("curtainDetail").disabled=true;
+        }
+        if(cksLength==0){
+            document.getElementById("curtainDelete").disabled=true;
+        }else {
+            document.getElementById("curtainDelete").disabled=false;
+        }
     };
     $("#curtainAdd").click(function (){
+        this.disabled=true;
         $("#addCurtain").show();
     });
 
@@ -81,6 +118,13 @@
         var price = document.getElementById("addPrice").value;
         var texture = document.getElementById("addTexture").value;
         var date = document.getElementById("addMarketDate").value;
+        if(date == ""){
+            window.alert("请输入日期！");
+            throw "参数缺失！";
+        }else if(price == ""){
+            window.alert("请输入价格！");
+            throw "参数缺失！";
+        }
         $.ajax({
             url:"/add",
             dataType:"json",
@@ -107,9 +151,11 @@
                 window.alert("新增窗帘信息失败！"+res);
             }
         });
+        document.getElementById("curtainAdd").disabled=false;
     });
     $("#addCancel").click(function (){
         $("#addCurtain").hide();
+        document.getElementById("curtainAdd").disabled=false;
     });
     $("#curtainDelete").click(function (){
        console.log("删除！")
@@ -140,6 +186,16 @@
        });
     });
 
+    $("#curtainEdit").click(function (){
+        var checkedBox = $("input[name=ck]:checked");
+        var checked = checkedBox[0].parentNode.parentNode.children;
+        var id = checked[1].innerHTML;
+        var name = checked[2].innerHTML;
+        var introduce = checked[3].innerHTML;
+        var price = checked[4].innerHTML;
+
+    });
+
     $("#ckAll").click(function (){
         var checked = document.getElementsByName("ckAll")[0].checked;
         if (checked){
@@ -154,6 +210,11 @@
       for (var i=0;i<cks.length;i++){
           cks[i].checked = true;
       }
+      document.getElementById("curtainDelete").disabled=false;
+      if(cks.length==1){
+          document.getElementById("curtainEdit").disabled=false;
+          document.getElementById("curtainDetail").disabled=false;
+      }
     };
 
     function qbx(){
@@ -161,6 +222,9 @@
         for (var i=0;i<cks.length;i++){
             cks[i].checked = false;
         }
+        document.getElementById("curtainDelete").disabled=true;
+        document.getElementById("curtainEdit").disabled=true;
+        document.getElementById("curtainDetail").disabled=true;
     };
 </script>
 </body>
