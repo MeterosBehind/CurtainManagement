@@ -4,9 +4,7 @@ import com.curtain.managementsystem.domains.Curtain;
 import com.curtain.managementsystem.service.CurtainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,13 +26,22 @@ public class CurtainController {
         List<Curtain> curtainList = curtainService.getCurtainList();
         return curtainList;
     }
-    @GetMapping("/add")
+    @PostMapping("/add")
     @ResponseBody
-    public HashMap<String,Object> addCurtainInfo(){
-        System.out.println("新增接口调用！");
+    public HashMap<String,Object> addCurtainInfo(Curtain curtain){
+        System.out.println("新增接口调用！"+curtain.toString());
         HashMap<String,Object> resultMap = new HashMap<>();
         resultMap.put("state",200);
         resultMap.put("result","窗帘新增成功！");
+        return resultMap;
+    }
+    @GetMapping("/delete")
+    @ResponseBody
+    public HashMap<String,Object> deleteCurtainInfo(@RequestParam String curtainIds){
+        System.out.println("删除接口调用！"+curtainIds);
+        HashMap<String,Object> resultMap = new HashMap<>();
+        resultMap.put("state",200);
+        resultMap.put("result","窗帘删除成功！");
         return resultMap;
     }
 }

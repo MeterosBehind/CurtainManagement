@@ -106,5 +106,19 @@ public class Curtain {
         this.resList = resList;
     }
 
-
+    @Override
+    public String toString() {
+        return "Curtain{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", texture='" + texture + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", price=" + price +
+                ", market_time=" + market_time +
+                ", created_time=" + created_time +
+                ", last_updated_time=" + last_updated_time +
+                ", resList=" + resList +
+                '}';
+    }
 }
