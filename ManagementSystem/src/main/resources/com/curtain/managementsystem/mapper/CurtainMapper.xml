@@ -8,9 +8,9 @@
         <result property="texture" column="texture" jdbcType="VARCHAR" javaType="String"/>
         <result property="introduction" column="introduction" jdbcType="VARCHAR" javaType="String"/>
         <result property="price" column="price" javaType="double" jdbcType="DOUBLE"/>
-        <result property="market_time" column="market_time" javaType="Date" jdbcType="DATE"/>
-        <result property="created_time" column="created_time" javaType="Date" jdbcType="DATE"/>
-        <result property="last_updated_time" column="last_updated_time" javaType="Date" jdbcType="DATE"/>
+        <result property="market_time" column="market_time" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result property="created_time" column="created_time" javaType="Date" jdbcType="TIMESTAMP"/>
+        <result property="last_updated_time" column="last_updated_time" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <select id="getCurtainInfoMapper" resultMap="CurtainMap">

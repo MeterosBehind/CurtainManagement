@@ -35,6 +35,15 @@ public class CurtainController {
         resultMap.put("result","窗帘新增成功！");
         return resultMap;
     }
+    @PostMapping("/edit")
+    @ResponseBody
+    public HashMap<String,Object> editCurtainInfo(Curtain curtain){
+        System.out.println("编辑接口调用！"+curtain.toString());
+        HashMap<String,Object> resultMap = new HashMap<>();
+        resultMap.put("state",200);
+        resultMap.put("result","编辑新增成功！");
+        return resultMap;
+    }
     @GetMapping("/delete")
     @ResponseBody
     public HashMap<String,Object> deleteCurtainInfo(@RequestParam String curtainIds){
