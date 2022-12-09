@@ -13,7 +13,22 @@
         <result property="last_updated_time" column="last_updated_time" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <resultMap id="ResourceMap" type="com.curtain.managementsystem.domains.Resource">
+        <id property="id" column="file_id" javaType="int" jdbcType="NUMERIC"/>
+        <result property="curtainId" column="curtain_id" jdbcType="NUMERIC" javaType="int"/>
+        <result property="name" column="file_name" jdbcType="VARCHAR" javaType="String"/>
+        <result property="type" column="file_type" jdbcType="NUMERIC" javaType="int"/>
+        <result property="deleted" column="deleted" jdbcType="NUMERIC" javaType="int"/>
+        <result property="path" column="file_path" jdbcType="VARCHAR" javaType="String"/>
+        <result property="update_time" column="last_updated_time" javaType="Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
     <select id="getCurtainInfoMapper" resultMap="CurtainMap">
         select * from curtain_info
+    </select>
+
+    <select id="getCurtainResMapper" resultMap="ResourceMap" parameterType="int">
+        select * from res_file where
+            deleted = 0 and curtain_id = #{curtainId,jdbcType=INTEGER}
     </select>
 </mapper>

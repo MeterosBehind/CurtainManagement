@@ -1,6 +1,7 @@
 package com.curtain.managementsystem.controller;
 
 import com.curtain.managementsystem.domains.Curtain;
+import com.curtain.managementsystem.domains.Resource;
 import com.curtain.managementsystem.service.CurtainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,14 @@ public class CurtainController {
         List<Curtain> curtainList = curtainService.getCurtainList();
         return curtainList;
     }
+
+    @GetMapping("/infoDetail")
+    @ResponseBody
+    public List<Resource> getCurtainInfoDetail(int curtainId){
+        List<Resource> resList = curtainService.getCurtainResList(curtainId);
+        return resList;
+    }
+
     @PostMapping("/add")
     @ResponseBody
     public HashMap<String,Object> addCurtainInfo(Curtain curtain){
@@ -41,7 +50,7 @@ public class CurtainController {
         System.out.println("编辑接口调用！"+curtain.toString());
         HashMap<String,Object> resultMap = new HashMap<>();
         resultMap.put("state",200);
-        resultMap.put("result","编辑新增成功！");
+        resultMap.put("result","窗帘编辑成功！");
         return resultMap;
     }
     @GetMapping("/delete")

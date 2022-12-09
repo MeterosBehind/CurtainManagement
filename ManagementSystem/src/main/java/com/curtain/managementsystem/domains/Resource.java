@@ -5,8 +5,32 @@ import java.util.Date;
 public class Resource {
     private String name,path;
     //type 1:图片 2:视频
-    private int size,type;
+    private int id,curtainId,size,type,deleted;
     private Date update_time;
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getCurtainId() {
+        return curtainId;
+    }
+
+    public void setCurtainId(int curtainId) {
+        this.curtainId = curtainId;
+    }
 
     public String getName() {
         return name;
@@ -51,11 +75,28 @@ public class Resource {
     public Resource() {
     }
 
-    public Resource(String name, String path, int size, int type, Date update_time) {
+    public Resource(String name, String path, int id, int curtainId, int size, int type, int deleted, Date update_time) {
         this.name = name;
         this.path = path;
+        this.id = id;
+        this.curtainId = curtainId;
         this.size = size;
         this.type = type;
+        this.deleted = deleted;
         this.update_time = update_time;
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", id=" + id +
+                ", curtainId=" + curtainId +
+                ", size=" + size +
+                ", type=" + type +
+                ", deleted=" + deleted +
+                ", update_time=" + update_time +
+                '}';
     }
 }

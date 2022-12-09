@@ -22,7 +22,7 @@
 <button id="curtainEdit" disabled>编辑窗帘</button>
 <button id="curtainDetail" disabled>窗帘详细信息</button>
 <p>
-<table border="1" cellspacing="0">
+<table id="topTable" border="1" cellspacing="0">
     <tr>
         <th><input type="checkbox" id="ckAll" name="ckAll" value="0"></th>
         <th width="50px">序号</th>
@@ -103,7 +103,7 @@
         上市时间: <input id="detailMarketDate" name="marketDate" type="datetime-local"/><p>
         窗帘简介: <input id="detailIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
         窗帘价格: <input id="detailPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
-        窗帘展示资源: <input id="detailResources" name="resList" type="file" accept=".png,.mp4,.jpg" multiple/><p>
+        <table><tr id="detailResTr"></tr></table>
         <input type="button" value="确定" id="detailConfirm" />
         <input type="button" value="取消" id="detailCancel" />
     </div>
@@ -126,9 +126,9 @@
             var market_day = market_date.getFullYear()+"-"+market_date.getMonth()+"-"+market_date.getDay();
             var $tr = $('<tr><td><input type="checkbox" name="ck" onclick="fxk()" value="'+ (i+1) +'"></td><td>' + (i + 1) + '</td><td class="name">' +
                 ele.name + '</td><td>'+ ele.type + '</td><td>'+ ele.texture + '</td><td>'+ market_day + '</td><td>'+ ele.introduction + '</td><td>'+ ele.price + '</td></tr>');
-            $('table').append($tr);
+            $('#topTable').append($tr);
         });
-        $('table').append($('<tr><td><input type="checkbox" name="ck" value="10" onclick="fxk()"></td><td>10</td><td>窗帘10</td><td>类型10</td><td>材质10</td><td>2022-1-25</td><td>简介******</td><td>12</td></tr>'))
+        $('#topTable').append($('<tr><td><input type="checkbox" name="ck" value="10" onclick="fxk()"></td><td>10</td><td>窗帘10</td><td>类型10</td><td>材质10</td><td>2022-1-25</td><td>简介******</td><td>12</td></tr>'))
     };
     function fxk(){
         var cks = document.getElementsByName("ck");
@@ -203,6 +203,28 @@
                 document.querySelector("#detailMarketDate").value=market_time;
                 document.getElementById("detailIntroduction").value=introduction;
                 document.getElementById("detailPrice").value=price;
+                $.ajax({
+                    url:"/infoDetail",
+                    dataType:"json",
+                    type:"get",
+                    data: {
+                        "curtainId":id
+                    },
+                    async:false,
+                    success:function(dataResList){
+                        $(dataResList).each(function (i,res){
+                            var path = res.path;
+                            var type = res.type;
+                            var $td;
+                            console.log("获取到资源信息："+path);
+                            if(type  == 1){
+                                $td = $('<td><img width="320" height="240" src="'+path+'"/></td>');
+                            }else if(type == 2){
+                                $td = $('<td><video width="320" height="240" controls="controls" src="'+path+'" autoplay/></td>');
+                            }
+                            $("#detailResTr").append($td);
+                        });
+                    }});
             };
             ele.disabled=true;
         });
@@ -295,23 +317,21 @@
                 window.alert("新增窗帘信息失败！"+res);
             }
         });
-        document.getElementById("curtainAdd").disabled=false;
     });
     $("#editCancel").click(function (){
         $("#editCurtain").hide();
         fxkAble();
-        document.getElementById("curtainEdit").disabled=false;
     });
 
     $("#detailConfirm").click(function (){
         $("#detailCurtain").hide();
         fxkAble();
-        document.getElementById("curtainDetail").disabled=false;
+        $("#detailResTr").empty();
     });
     $("#detailCancel").click(function (){
         $("#detailCurtain").hide();
         fxkAble();
-        document.getElementById("curtainDetail").disabled=false;
+        $("#detailResTr").empty();
     });
     function fxkDisable(){
         var list = document.getElementsByName("ck");
