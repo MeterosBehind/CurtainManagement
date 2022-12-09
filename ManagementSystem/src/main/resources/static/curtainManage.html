@@ -14,7 +14,7 @@
     }</style>
 </head>
 <body>
-<h1>欢迎使用窗帘信息管理系统！</h1>
+<!--<h1>欢迎使用窗帘信息管理系统！</h1>-->
 <a href="/info">查询窗帘信息！</a>
 <p id="curtainInfo">窗帘信息</p>
 <button id="curtainAdd">新增窗帘</button>
@@ -78,7 +78,8 @@
 <form id="editCurtain" hidden>
     <p class="addCurtain">编辑窗帘</p>
     <div class="">
-        <p>窗帘名称: <input id="editName" name="name" type="text" placeholder="请输入窗帘名称" /><p>
+        <p>窗帘编号: <input id="editId" name="id" type="text" disabled/><p>
+        窗帘名称: <input id="editName" name="name" type="text" placeholder="请输入窗帘名称" /><p>
         窗帘类型: <input id="editType" name="type" type="text" placeholder="请输入窗帘类型" /><p>
         窗帘材质: <input id="editTexture" name="texture" type="text" placeholder="请输入窗帘材质" /><p>
         上市时间: <input id="editMarketDate" name="marketDate" type="datetime-local"/><p>
@@ -87,6 +88,24 @@
         窗帘展示资源: <input id="editResources" name="resList" type="file" accept=".png,.mp4,.jpg" multiple/><p>
         <input type="button" value="保存" id="editConfirm" />
         <input type="button" value="取消" id="editCancel" />
+    </div>
+</form>
+
+
+<!--详情界面-->
+<form id="detailCurtain" hidden>
+    <p class="addCurtain">窗帘信息详情</p>
+    <div class="">
+        <p>窗帘编号: <input id="detailId" name="id" type="text" disabled/><p>
+        窗帘名称: <input id="detailName" name="name" type="text" placeholder="请输入窗帘名称" /><p>
+        窗帘类型: <input id="detailType" name="type" type="text" placeholder="请输入窗帘类型" /><p>
+        窗帘材质: <input id="detailTexture" name="texture" type="text" placeholder="请输入窗帘材质" /><p>
+        上市时间: <input id="detailMarketDate" name="marketDate" type="datetime-local"/><p>
+        窗帘简介: <input id="detailIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
+        窗帘价格: <input id="detailPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
+        窗帘展示资源: <input id="detailResources" name="resList" type="file" accept=".png,.mp4,.jpg" multiple/><p>
+        <input type="button" value="确定" id="detailConfirm" />
+        <input type="button" value="取消" id="detailCancel" />
     </div>
 </form>
 
@@ -135,6 +154,7 @@
     };
     $("#curtainAdd").click(function (){
         this.disabled=true;
+        fxkDisable();
         $("#addCurtain").show();
     });
     $("#curtainEdit").click(function (){
@@ -142,12 +162,14 @@
         var list = document.getElementsByName("ck");
         $(list).each(function (i,ele){
             if(ele.checked == true){
+                var id = $(ele).parents("tr").children("td").get(1).innerHTML;
                 var name = $(ele).parents("tr").children("td").get(2).innerHTML;
                 var type = $(ele).parents("tr").children("td").get(3).innerHTML;
                 var texture = $(ele).parents("tr").children("td").get(4).innerHTML;
                 var market_day = $(ele).parents("tr").children("td").get(5).innerHTML;
                 var introduction = $(ele).parents("tr").children("td").get(6).innerHTML;
                 var price = $(ele).parents("tr").children("td").get(7).innerHTML;
+                document.getElementById("editId").value=id;
                 document.getElementById("editName").value=name;
                 document.getElementById("editType").value=type;
                 document.getElementById("editTexture").value=texture;
@@ -155,9 +177,36 @@
                 document.querySelector("#editMarketDate").value=market_time;
                 document.getElementById("editIntroduction").value=introduction;
                 document.getElementById("editPrice").value=price;
-            }
+            };
         });
+        fxkDisable();
         $("#editCurtain").show();
+    });
+    $("#curtainDetail").click(function (){
+        this.disabled=true;
+        buttonDisable();
+        var list = document.getElementsByName("ck");
+        $(list).each(function (i,ele){
+            if(ele.checked == true){
+                var id = $(ele).parents("tr").children("td").get(1).innerHTML;
+                var name = $(ele).parents("tr").children("td").get(2).innerHTML;
+                var type = $(ele).parents("tr").children("td").get(3).innerHTML;
+                var texture = $(ele).parents("tr").children("td").get(4).innerHTML;
+                var market_day = $(ele).parents("tr").children("td").get(5).innerHTML;
+                var introduction = $(ele).parents("tr").children("td").get(6).innerHTML;
+                var price = $(ele).parents("tr").children("td").get(7).innerHTML;
+                document.getElementById("detailId").value=id;
+                document.getElementById("detailName").value=name;
+                document.getElementById("detailType").value=type;
+                document.getElementById("detailTexture").value=texture;
+                var market_time = new Date(market_day).format("yyyy-MM-ddThh:mm:ss");
+                document.querySelector("#detailMarketDate").value=market_time;
+                document.getElementById("detailIntroduction").value=introduction;
+                document.getElementById("detailPrice").value=price;
+            };
+            ele.disabled=true;
+        });
+        $("#detailCurtain").show();
     });
 
     $("#addConfirm").click(function (){
@@ -195,7 +244,52 @@
                 document.getElementById("addPrice").value="";
                 document.getElementById("addTexture").value="";
                 document.getElementById("addMarketDate").value="";
+                fxkAble();
                 window.alert("新增窗帘信息成功！");
+            },
+            error:function (res){
+                window.alert("新增窗帘信息失败！"+res);
+            }
+        });
+    });
+    $("#addCancel").click(function (){
+        $("#addCurtain").hide();
+        fxkAble();
+    });
+
+    $("#editConfirm").click(function (){
+        console.log("编辑确定！");
+        var id = document.getElementById("editId").value;
+        var name = document.getElementById("editName").value;
+        var type = document.getElementById("editType").value;
+        var introduction = document.getElementById("editIntroduction").value;
+        var price = document.getElementById("editPrice").value;
+        var texture = document.getElementById("editTexture").value;
+        var date = document.getElementById("editMarketDate").value;
+        if(date == ""){
+            window.alert("请输入日期！");
+            throw "参数缺失！";
+        }else if(price == ""){
+            window.alert("请输入价格！");
+            throw "参数缺失！";
+        }
+        $.ajax({
+            url:"/edit",
+            dataType:"json",
+            type:"post",
+            data: {
+                "id":id,
+                "name":name,
+                "type":type,
+                "introduction":introduction,
+                "price":price,
+                "texture":texture,
+                "market_time":new Date(date)
+            },
+            success:function(){
+                $("#editCurtain").hide();
+                fxkAble();
+                window.alert("编辑窗帘信息成功！");
             },
             error:function (res){
                 window.alert("新增窗帘信息失败！"+res);
@@ -203,14 +297,52 @@
         });
         document.getElementById("curtainAdd").disabled=false;
     });
-    $("#addCancel").click(function (){
-        $("#addCurtain").hide();
-        document.getElementById("curtainAdd").disabled=false;
-    });
     $("#editCancel").click(function (){
         $("#editCurtain").hide();
+        fxkAble();
         document.getElementById("curtainEdit").disabled=false;
     });
+
+    $("#detailConfirm").click(function (){
+        $("#detailCurtain").hide();
+        fxkAble();
+        document.getElementById("curtainDetail").disabled=false;
+    });
+    $("#detailCancel").click(function (){
+        $("#detailCurtain").hide();
+        fxkAble();
+        document.getElementById("curtainDetail").disabled=false;
+    });
+    function fxkDisable(){
+        var list = document.getElementsByName("ck");
+        $(list).each(function (i,ele){
+            ele.disabled=true;
+        });
+        document.getElementById("ckAll").disabled=true;
+        buttonDisable();
+    };
+    function fxkAble(){
+        var list = document.getElementsByName("ck");
+        $(list).each(function (i,ele){
+            ele.disabled=false;
+            ele.checked=false;
+        });
+        document.getElementById("ckAll").disabled=false;
+        buttonAble();
+    };
+    function buttonDisable(){
+        document.getElementById("curtainAdd").disabled=true;
+        document.getElementById("curtainDelete").disabled=true;
+        document.getElementById("curtainEdit").disabled=true;
+        document.getElementById("curtainDetail").disabled=true;
+    };
+    function buttonAble(){
+        document.getElementById("curtainAdd").disabled=false;
+        document.getElementById("curtainDelete").disabled=false;
+        document.getElementById("curtainEdit").disabled=true;
+        document.getElementById("curtainDetail").disabled=true;
+    };
+
     $("#curtainDelete").click(function (){
        console.log("删除！")
        var list = document.getElementsByName("ck");
