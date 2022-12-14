@@ -66,8 +66,8 @@
         上市时间: <input id="addMarketDate" name="marketDate" type="datetime-local"/><p>
         窗帘简介: <input id="addIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
         窗帘价格: <input id="addPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
-        窗帘展示资源: <input id="addResources" name="resList" type="file" accept=".png,.mp4,.jpg" multiple/><p>
-
+        窗帘展示资源: <input id="addResources" name="resList" type="file" accept=".png,.mp4,.jpg" onchange="addChange()" multiple/><p>
+        <div id="addResDiv"></div>
         <input type="button" value="保存" id="addConfirm" />
         <input type="button" value="取消" id="addCancel" />
     </div>
@@ -457,6 +457,41 @@
                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
         return fmt;
     }
+    function addChange(){
+        console.log("新增文件改变！");
+        var file = document.getElementById("addResources");
+        var imgDiv = document.getElementById("addResDiv");
+        for(var i=0;i<file.files.length;i++){
+            var file1 = file.files[i];
+            var extendAll = file1.name.split(".");
+            var extend = extendAll[extendAll.length-1].toLowerCase();
+            if("png" != extend && "jpg" != extend && "mp4" != extend){
+                alert("请选择jpg、png或mp4格式的资源文件！");
+                $("#addResources").empty();
+                return;
+            }
+        }
+
+        for(var i=0;i<file.files.length;i++){
+            let reader = new FileReader();
+            var file1 = file.files[i];
+            reader.readAsDataURL (file1);
+            var extendAll = file1.name.split(".");
+            var extend = extendAll[extendAll.length-1].toLowerCase();
+
+            reader.onload = result => {
+                //reader对象的result属性存储流读取的数据
+                if("jpg" == extend || "png" == extend ){
+                    imgDiv.innerHTML += '<img width="320" height="240" src="' + reader.result + '" alt=""/>';
+                }else if("mp4" == extend){
+                    imgDiv.innerHTML += '<video width="320" height="240" controls="controls" src="' + reader.result + '" autoplay/>';
+                }
+            }
+
+        }
+    }
+
+
 
 </script>
 </body>
