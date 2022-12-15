@@ -11,7 +11,30 @@
         height: 30px;
         line-height: 30px;
         padding-left: 5px;
-    }</style>
+    }
+        .file-temp {
+            position: relative;
+            width: 320px;
+            height: 240px;
+        }
+        .file-temp-btn {
+            position: absolute;
+            display: inline-block;
+            top: 4px;
+            right: 11%;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            border: 1px solid #ddd;
+            background-color: #ccc;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+    </style>
 </head>
 <body>
 <!--<h1>欢迎使用窗帘信息管理系统！</h1>-->
@@ -110,6 +133,8 @@
 </form>
 
 <script>
+    var trueFiles = []; //图片上传、编辑时存储所有图片（或者新增的图片）的数组
+    var fileNames = [];
     window.onload =function() {  //一加载界面就调用
         var list = [];
         $.ajax({
@@ -460,39 +485,49 @@
     function addChange(){
         console.log("新增文件改变！");
         var file = document.getElementById("addResources");
-        var imgDiv = document.getElementById("addResDiv");
         for(var i=0;i<file.files.length;i++){
             var file1 = file.files[i];
             var extendAll = file1.name.split(".");
             var extend = extendAll[extendAll.length-1].toLowerCase();
             if("png" != extend && "jpg" != extend && "mp4" != extend){
                 alert("请选择jpg、png或mp4格式的资源文件！");
-                $("#addResources").empty();
+                // $("#addResources").empty();
+                return;
+            }
+            if(fileNames.includes(file1.name)){
+                alert("请勿选择重复的资源文件:"+file1.name+"！");
                 return;
             }
         }
-
         for(var i=0;i<file.files.length;i++){
-            let reader = new FileReader();
             var file1 = file.files[i];
-            reader.readAsDataURL (file1);
-            var extendAll = file1.name.split(".");
-            var extend = extendAll[extendAll.length-1].toLowerCase();
-
-            reader.onload = result => {
-                //reader对象的result属性存储流读取的数据
-                if("jpg" == extend || "png" == extend ){
-                    imgDiv.innerHTML += '<img width="320" height="240" src="' + reader.result + '" alt=""/>';
-                }else if("mp4" == extend){
-                    imgDiv.innerHTML += '<video width="320" height="240" controls="controls" src="' + reader.result + '" autoplay/>';
-                }
-            }
-
+            addFile(file1);
+            trueFiles.push(file1);
+            fileNames.push(file1.name);
         }
+        console.log(trueFiles);
     }
 
-
-
+    function addFile(file){
+        var imgDiv = document.getElementById("addResDiv");
+        let reader = new FileReader();
+        var extendAll = file.name.split(".");
+        var extend = extendAll[extendAll.length-1].toLowerCase();
+        console.log("后缀名称1："+extendAll)
+        reader.readAsDataURL (file);
+        reader.onload = result => {
+            var htmlStr = '<div class="file-temp"> ';
+            //reader对象的result属性存储流读取的数据
+            if("jpg" == extend || "png" == extend ){
+                htmlStr += '<img width="320" height="240" name="'+ file.name +'" src="' + reader.result + '" alt=""/>';
+            }else if("mp4" == extend){
+                htmlStr += '<video width="320" height="240" controls="controls" name="'+ file.name +'" src="' + reader.result + '" autoplay/>';
+            }
+            htmlStr += '<span class="file-temp-btn">&times;</span></div>';
+            imgDiv.innerHTML += htmlStr;
+        }
+    };
 </script>
+
 </body>
 </html>
