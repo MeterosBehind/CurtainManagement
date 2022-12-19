@@ -273,19 +273,26 @@
         }else if(price == ""){
             window.alert("请输入价格！");
             throw "参数缺失！";
+        }else if(trueFiles.length==0){
+            alert("请选择至少一个资源！");
+            throw "参数缺失！";
+        }
+        let fileData = new FormData();
+        fileData.append("name",name);
+        fileData.append("type",type);
+        fileData.append("introduction",introduction);
+        fileData.append("price",price);
+        fileData.append("market_time",new Date(date));
+        fileData.append("name",name);
+        for(let i=0;i<trueFiles.length;i++){
+            fileData.append("multipartFiles",trueFiles[i]);
         }
         $.ajax({
             url:"/add",
-            dataType:"json",
+            contentType:false,
+            processData: false,
             type:"post",
-            data: {
-                "name":name,
-                "type":type,
-                "introduction":introduction,
-                "price":price,
-                "texture":texture,
-                "market_time":new Date(date)
-            },
+            data: fileData,
             success:function(){
                 $("#addCurtain").hide();
                 document.getElementById("addName").value="";
@@ -295,6 +302,9 @@
                 document.getElementById("addTexture").value="";
                 document.getElementById("addMarketDate").value="";
                 fxkAble();
+                $("#addResDiv").empty();
+                trueFiles=[];
+                fileNames=[];
                 window.alert("新增窗帘信息成功！");
             },
             error:function (res){
@@ -490,7 +500,6 @@
         var file = document.getElementById("addResources");
         for(var i=0;i<file.files.length;i++){
             var file1 = file.files[i];
-            console.log(file1);
             var extendAll = file1.name.split(".");
             var extend = extendAll[extendAll.length-1].toLowerCase();
             if("png" != extend && "jpg" != extend && "mp4" != extend){

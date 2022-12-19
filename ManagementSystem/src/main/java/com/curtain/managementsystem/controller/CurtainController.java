@@ -6,6 +6,7 @@ import com.curtain.managementsystem.service.CurtainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class CurtainController {
 
     @PostMapping("/add")
     @ResponseBody
-    public HashMap<String,Object> addCurtainInfo(Curtain curtain){
+    public HashMap<String,Object> addCurtainInfo(Curtain curtain, @RequestParam MultipartFile[] multipartFiles){
         System.out.println("新增接口调用！"+curtain.toString());
         HashMap<String,Object> resultMap = new HashMap<>();
         resultMap.put("state",200);
