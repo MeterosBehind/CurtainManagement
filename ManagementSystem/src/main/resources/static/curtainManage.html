@@ -14,14 +14,15 @@
     }
         .file-temp {
             position: relative;
-            width: 320px;
+            width: auto;
             height: 240px;
+            float: left;
         }
         .file-temp-btn {
             position: absolute;
             display: inline-block;
-            top: 4px;
-            right: 11%;
+            top: 2%;
+            right: 2%;
             width: 18px;
             height: 18px;
             line-height: 18px;
@@ -32,6 +33,7 @@
             color: #fff;
             font-size: 18px;
             cursor: pointer;
+            z-index: 2;
         }
 
     </style>
@@ -90,7 +92,8 @@
         窗帘简介: <input id="addIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
         窗帘价格: <input id="addPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
         窗帘展示资源: <input id="addResources" name="resList" type="file" accept=".png,.mp4,.jpg" onchange="addChange()" multiple/><p>
-        <div id="addResDiv"></div>
+        <div style="overflow:auto" id="addResDiv"></div>
+        <p></p>
         <input type="button" value="保存" id="addConfirm" />
         <input type="button" value="取消" id="addCancel" />
     </div>
@@ -487,6 +490,7 @@
         var file = document.getElementById("addResources");
         for(var i=0;i<file.files.length;i++){
             var file1 = file.files[i];
+            console.log(file1);
             var extendAll = file1.name.split(".");
             var extend = extendAll[extendAll.length-1].toLowerCase();
             if("png" != extend && "jpg" != extend && "mp4" != extend){
@@ -516,17 +520,37 @@
         console.log("后缀名称1："+extendAll)
         reader.readAsDataURL (file);
         reader.onload = result => {
-            var htmlStr = '<div class="file-temp"> ';
+            var htmlStr = '<div class="file-temp"> <span class="file-temp-btn" onclick="deleteFile(this)">&times;</span>';
             //reader对象的result属性存储流读取的数据
             if("jpg" == extend || "png" == extend ){
-                htmlStr += '<img width="320" height="240" name="'+ file.name +'" src="' + reader.result + '" alt=""/>';
+                htmlStr += '<img style="z-index: 1" width="320" height="240" name="'+ file.name +'" src="' + reader.result + '" alt=""/></div>';
             }else if("mp4" == extend){
-                htmlStr += '<video width="320" height="240" controls="controls" name="'+ file.name +'" src="' + reader.result + '" autoplay/>';
+                htmlStr += '<video style="z-index: 1" width="320" height="240" controls="controls" src="' + reader.result + '" autoplay>'+ file.name +'</video></div>';
             }
-            htmlStr += '<span class="file-temp-btn">&times;</span></div>';
             imgDiv.innerHTML += htmlStr;
         }
     };
+
+    function deleteFile(obj){
+        console.log("删除资源！");
+        // console.log($(obj).parent().children());
+        var nameNode = $(obj).parent().children()[1];
+        // console.log(nameNode);
+        var num = fileNames.indexOf(nameNode.name);
+        if(num == -1){
+            num = fileNames.indexOf(nameNode.innerHTML);
+        }
+        if(num != -1){
+            fileNames.splice(num,1);
+            trueFiles.splice(num,1);
+        }else {
+            throw "删除文件名称不存在！";
+        }
+        console.log(fileNames);
+        console.log(trueFiles);
+        $(obj).parent().empty();
+
+    }
 </script>
 
 </body>

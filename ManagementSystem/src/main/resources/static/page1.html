@@ -39,17 +39,29 @@
         });
 
     }
-
+    function addChange1(obj){
+        console.log("hey!删除事件！");
+        var node = $(obj).parent().parent().children()[1];
+        console.log(node);
+        var name = node.innerHTML;
+        console.log(name);
+    }
 
 
 </script>
 <div class="imgDiv">
-    <img src="http://172.16.210.219:8090/mips/image/2022/12/09/1791.png" />
     <a href="#">
-        <img src="http://172.16.210.219:8090/mips/image/2022/12/09/1790.png" class="delete" />
+        <img src="http://172.16.210.219:8090/mips/image/2022/12/09/1790.png" class="delete"  onclick="addChange1(this)"/>
     </a>
+    <img width="320" height="240" src="http://172.16.210.219:8090/mips/image/2022/12/09/1791.png"/>
 </div>
 
+<div class="imgDiv">
+    <a href="#">
+        <img style="z-index: 2" src="http://172.16.210.219:8090/mips/image/2022/12/09/1790.png" class="delete" onclick="addChange1(this)"/>
+    </a>
+    <video  style="position: relative;z-index: 1" width="320" height="240" src="http://172.16.210.219:8090/mips/video/2022/12/15/2050.mp4" controls autoplay>1234.mp4</video>
+</div>
 
 </body>
 </html>
