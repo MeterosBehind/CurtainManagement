@@ -40,6 +40,7 @@ public class CurtainController {
     @ResponseBody
     public HashMap<String,Object> addCurtainInfo(Curtain curtain, @RequestParam MultipartFile[] multipartFiles){
         System.out.println("新增接口调用！"+curtain.toString());
+        curtainService.addCurtain(curtain,multipartFiles);
         HashMap<String,Object> resultMap = new HashMap<>();
         resultMap.put("state",200);
         resultMap.put("result","窗帘新增成功！");

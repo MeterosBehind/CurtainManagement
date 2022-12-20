@@ -22,6 +22,11 @@
         <result property="path" column="file_path" jdbcType="VARCHAR" javaType="String"/>
         <result property="update_time" column="last_updated_time" javaType="Date" jdbcType="TIMESTAMP"/>
     </resultMap>
+    <insert id="addCurtain" parameterType="com.curtain.managementsystem.domains.Curtain" useGeneratedKeys="true" keyProperty="id">
+        insert into curtain_info(name,type,texture,price,introduction,market_time,created_time,last_updated_time)
+        values (#{name,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},#{texture,jdbcType=VARCHAR},#{price,jdbcType=DOUBLE},
+                #{introduction,jdbcType=VARCHAR},#{market_time,jdbcType=DATE},now(),now())
+    </insert>
 
     <select id="getCurtainInfoMapper" resultMap="CurtainMap">
         select * from curtain_info
