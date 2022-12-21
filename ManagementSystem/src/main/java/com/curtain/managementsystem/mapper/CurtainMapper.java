@@ -9,7 +9,22 @@ import java.util.List;
 @Mapper
 public interface CurtainMapper {
     List<Curtain> getCurtainInfoMapper();
+
     List<Resource> getCurtainResMapper(int curtainId);
 
     void addCurtain(Curtain curtain);
+
+    void addResources(List<Resource> resourceList);
+
+    int getCurtainCountByName(Curtain curtain);
+
+    Resource getResById(int resId);
+
+    void deleteRes(Resource resource);
+
+    void updateCurtain(Curtain curtain);
+
+    void deleteCurtains(String curtainIds);
+
+    void deleteCurtainRes(String curtainIds);
 }

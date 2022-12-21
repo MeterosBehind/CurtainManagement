@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.crypto.Data;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -53,17 +54,75 @@ public class CurtainServiceImpl implements CurtainService {
     }
 
     @Override
-    public void addCurtain(Curtain curtain, MultipartFile[] multipartFiles) {
+    public String addCurtain(Curtain curtain, MultipartFile[] multipartFiles) {
+        int count = curtainMapper.getCurtainCountByName(curtain);
+        if(count!=0){
+            return "该窗帘名称："+curtain.getName()+"，已存在!";
+        }
         curtainMapper.addCurtain(curtain);
+        if(multipartFiles != null){
+            handResources(curtain,multipartFiles);
+        }
+        return null;
+    }
+
+    @Override
+    public String editCurtain(Curtain curtain, MultipartFile[] multipartFiles,String deletedIds) {
+        int count = curtainMapper.getCurtainCountByName(curtain);
+        if(count!=0){
+            return "该窗帘名称："+curtain.getName()+"，已存在!";
+        }
+        if(deletedIds!=null && !"".equals(deletedIds)){
+            String[] ids = deletedIds.split(",");
+            for(String id:ids){
+                int resId = Integer.parseInt(id);
+                Resource resource = curtainMapper.getResById(resId);
+                resource.setName(resource.getName()+"("+System.currentTimeMillis()+")");
+                curtainMapper.deleteRes(resource);
+            }
+        }
+        if(multipartFiles != null){
+            handResources(curtain,multipartFiles);
+        }
+        curtainMapper.updateCurtain(curtain);
+        return null;
+    }
+
+    @Override
+    public String deleteCurtains(String curtainIds) {
+        try{
+            curtainMapper.deleteCurtains(curtainIds);
+            curtainMapper.deleteCurtainRes(curtainIds);
+        }catch (Exception e){
+            e.printStackTrace();
+            return e.getMessage();
+        }
+        return null;
+    }
+
+    void handResources(Curtain curtain,MultipartFile[] multipartFiles){
         Calendar now = Calendar.getInstance();
-        int year = now.get(Calendar.YEAR),month = now.get(Calendar.MONTH),day=now.get(Calendar.DAY_OF_MONTH);
+        int year = now.get(Calendar.YEAR),month = now.get(Calendar.MONTH)+1,day=now.get(Calendar.DAY_OF_MONTH);
         String detailPath = "curtainRes" + File.separator + year+ File.separator + month+ File.separator + day;
         String curtainPath = FilenameUtils.concat(localPath,detailPath);
+        List<Resource> resourceList = new ArrayList<>();
         for(MultipartFile multipartFile:multipartFiles){
             MultipartFileUtil.saveMultipartFile(multipartFile,curtainPath);
+            String fileName = multipartFile.getOriginalFilename();
+            Resource resource = new Resource();
+            resource.setCurtainId(curtain.getId());
+            resource.setPath(FilenameUtils.concat(detailPath,fileName));
+            resource.setName(fileName);
+            int type = 1;
+            fileName = fileName.toLowerCase();
+            if(fileName.indexOf(".mp4") != -1){
+                type = 2;
+            }
+            resource.setType(type);
+            resource.setSize(Integer.parseInt(multipartFile.getSize()+""));
+            resourceList.add(resource);
         }
-
-
+        curtainMapper.addResources(resourceList);
     }
 
 }

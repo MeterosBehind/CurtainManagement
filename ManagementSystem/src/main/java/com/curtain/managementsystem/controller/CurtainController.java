@@ -4,6 +4,7 @@ import com.curtain.managementsystem.domains.Curtain;
 import com.curtain.managementsystem.domains.Resource;
 import com.curtain.managementsystem.service.CurtainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,28 +41,45 @@ public class CurtainController {
     @ResponseBody
     public HashMap<String,Object> addCurtainInfo(Curtain curtain, @RequestParam MultipartFile[] multipartFiles){
         System.out.println("新增接口调用！"+curtain.toString());
-        curtainService.addCurtain(curtain,multipartFiles);
+        String result = curtainService.addCurtain(curtain,multipartFiles);
         HashMap<String,Object> resultMap = new HashMap<>();
-        resultMap.put("state",200);
-        resultMap.put("result","窗帘新增成功！");
+        if(result == null){
+            resultMap.put("state",200);
+            resultMap.put("result","窗帘新增成功！");
+        }else {
+            resultMap.put("state",500);
+            resultMap.put("result",result);
+        }
         return resultMap;
     }
     @PostMapping("/edit")
     @ResponseBody
-    public HashMap<String,Object> editCurtainInfo(Curtain curtain){
+    public HashMap<String,Object> editCurtainInfo(Curtain curtain, @Nullable @RequestParam MultipartFile[] multipartFiles, @RequestParam String deletedResIds){
         System.out.println("编辑接口调用！"+curtain.toString());
+        String result = curtainService.editCurtain(curtain,multipartFiles,deletedResIds);
         HashMap<String,Object> resultMap = new HashMap<>();
-        resultMap.put("state",200);
-        resultMap.put("result","窗帘编辑成功！");
+        if(result==null){
+            resultMap.put("state",200);
+            resultMap.put("result","窗帘编辑成功！");
+        }else {
+            resultMap.put("state",500);
+            resultMap.put("result",result);
+        }
         return resultMap;
     }
     @GetMapping("/delete")
     @ResponseBody
     public HashMap<String,Object> deleteCurtainInfo(@RequestParam String curtainIds){
         System.out.println("删除接口调用！"+curtainIds);
+        String result = curtainService.deleteCurtains(curtainIds);
         HashMap<String,Object> resultMap = new HashMap<>();
-        resultMap.put("state",200);
-        resultMap.put("result","窗帘删除成功！");
+        if(result==null){
+            resultMap.put("state",200);
+            resultMap.put("result","窗帘删除成功！");
+        }else {
+            resultMap.put("state",500);
+            resultMap.put("result",result);
+        }
         return resultMap;
     }
 }

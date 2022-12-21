@@ -12,5 +12,9 @@ public interface CurtainService {
 
     List<Resource> getCurtainResList(int curtainId);
 
-    void addCurtain(Curtain curtain, MultipartFile[] multipartFiles);
+    String addCurtain(Curtain curtain, MultipartFile[] multipartFiles);
+
+    String editCurtain(Curtain curtain, MultipartFile[] multipartFiles,String deletedIds);
+
+    String deleteCurtains(String curtainIds);
 }

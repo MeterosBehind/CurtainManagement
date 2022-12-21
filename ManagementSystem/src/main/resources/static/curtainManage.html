@@ -58,7 +58,7 @@
         <th width="400px">简介</th>
         <th width="200px">价格</th>
     </tr>
-    <tr>
+<!--    <tr>
         <td><input type="checkbox" name="ck" value="11" onclick="fxk()"></td>
         <td>11</td>
         <td>窗帘11</td>
@@ -77,7 +77,7 @@
         <td>2021-12-5</td>
         <td>简介333</td>
         <td>12</td>
-    </tr>
+    </tr>-->
 </table>
 
 <!--添加界面-->
@@ -91,7 +91,7 @@
         上市时间: <input id="addMarketDate" name="marketDate" type="datetime-local"/><p>
         窗帘简介: <input id="addIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
         窗帘价格: <input id="addPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
-        窗帘展示资源: <input id="addResources" name="resList" type="file" accept=".png,.mp4,.jpg" onchange="addChange()" multiple/><p>
+        窗帘展示资源: <input id="addResources" name="resList" type="file" accept=".png,.mp4,.jpg" onchange="addChange('addResources')" multiple/><p>
         <div style="overflow:auto" id="addResDiv"></div>
         <p></p>
         <input type="button" value="保存" id="addConfirm" />
@@ -111,7 +111,9 @@
         上市时间: <input id="editMarketDate" name="marketDate" type="datetime-local"/><p>
         窗帘简介: <input id="editIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
         窗帘价格: <input id="editPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
-        窗帘展示资源: <input id="editResources" name="resList" type="file" accept=".png,.mp4,.jpg" multiple/><p>
+        窗帘展示资源: <input id="editResources" name="resList" type="file" accept=".png,.mp4,.jpg" onchange="addChange('editResources')" multiple/><p>
+        <div style="overflow:auto" id="editResDiv"></div>
+        <p></p>
         <input type="button" value="保存" id="editConfirm" />
         <input type="button" value="取消" id="editCancel" />
     </div>
@@ -123,13 +125,14 @@
     <p class="addCurtain">窗帘信息详情</p>
     <div class="">
         <p>窗帘编号: <input id="detailId" name="id" type="text" disabled/><p>
-        窗帘名称: <input id="detailName" name="name" type="text" placeholder="请输入窗帘名称" /><p>
-        窗帘类型: <input id="detailType" name="type" type="text" placeholder="请输入窗帘类型" /><p>
-        窗帘材质: <input id="detailTexture" name="texture" type="text" placeholder="请输入窗帘材质" /><p>
-        上市时间: <input id="detailMarketDate" name="marketDate" type="datetime-local"/><p>
-        窗帘简介: <input id="detailIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" /><p>
-        窗帘价格: <input id="detailPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" /><p>
-        <table><tr id="detailResTr"></tr></table>
+        窗帘名称: <input id="detailName" name="name" type="text" placeholder="请输入窗帘名称" disabled/><p>
+        窗帘类型: <input id="detailType" name="type" type="text" placeholder="请输入窗帘类型" disabled/><p>
+        窗帘材质: <input id="detailTexture" name="texture" type="text" placeholder="请输入窗帘材质" disabled/><p>
+        上市时间: <input id="detailMarketDate" name="marketDate" type="datetime-local" disabled/><p>
+        窗帘简介: <input id="detailIntroduction" name="introduction" type="text" placeholder="请输入窗帘简介" disabled/><p>
+        窗帘价格: <input id="detailPrice" name="price" type="text" placeholder="请输入窗帘价格（元）" disabled/><p>
+        窗帘展示资源： <div style="overflow:auto" id="detailResDiv"></div>
+        <p></p>
         <input type="button" value="确定" id="detailConfirm" />
         <input type="button" value="取消" id="detailCancel" />
     </div>
@@ -138,6 +141,7 @@
 <script>
     var trueFiles = []; //图片上传、编辑时存储所有图片（或者新增的图片）的数组
     var fileNames = [];
+    var deletedIds = []; //窗帘编辑时，删除的之前就存在的资源id集合
     window.onload =function() {  //一加载界面就调用
         var list = [];
         $.ajax({
@@ -151,13 +155,44 @@
         console.log(list);
         $(list).each(function(i, ele) {
             var market_date = new Date(ele.market_time);
-            var market_day = market_date.getFullYear()+"-"+market_date.getMonth()+"-"+market_date.getDay();
-            var $tr = $('<tr><td><input type="checkbox" name="ck" onclick="fxk()" value="'+ (i+1) +'"></td><td>' + (i + 1) + '</td><td class="name">' +
+            var market_day = market_date.format("yyyy-MM-dd hh:mm:ss");
+            var $tr = $('<tr><td><input type="checkbox" name="ck" onclick="fxk()" value="'+ ele.id +'"></td><td>' + (i + 1) + '</td><td class="name">' +
                 ele.name + '</td><td>'+ ele.type + '</td><td>'+ ele.texture + '</td><td>'+ market_day + '</td><td>'+ ele.introduction + '</td><td>'+ ele.price + '</td></tr>');
             $('#topTable').append($tr);
         });
-        $('#topTable').append($('<tr><td><input type="checkbox" name="ck" value="10" onclick="fxk()"></td><td>10</td><td>窗帘10</td><td>类型10</td><td>材质10</td><td>2022-1-25</td><td>简介******</td><td>12</td></tr>'))
+        // $('#topTable').append($('<tr><td><input type="checkbox" name="ck" value="10" onclick="fxk()"></td><td>10</td><td>窗帘10</td><td>类型10</td><td>材质10</td><td>2022-1-25</td><td>简介******</td><td>12</td></tr>'))
     };
+    function refreshInfo(){
+        $("#topTable").empty();
+        var $trTop = $('<tr>\n' +
+            '        <th><input type="checkbox" id="ckAll" name="ckAll" value="0"></th>\n' +
+            '        <th width="50px">序号</th>\n' +
+            '        <th width="200px">名称</th>\n' +
+            '        <th width="200px">类型</th>\n' +
+            '        <th width="200px">材质</th>\n' +
+            '        <th width="200px">上市时间</th>\n' +
+            '        <th width="400px">简介</th>\n' +
+            '        <th width="200px">价格</th>\n' +
+            '    </tr>');
+        $('#topTable').append($trTop);
+        var list = [];
+        $.ajax({
+            url:"/info",
+            dataType:"json",
+            type:"get",
+            async:false,
+            success:function(data){
+                list = data;
+            }});
+        $(list).each(function(i, ele) {
+            var market_date = new Date(ele.market_time);
+            var market_day = market_date.format("yyyy-MM-dd hh:mm:ss");
+            var $tr = $('<tr><td><input type="checkbox" name="ck" onclick="fxk()" value="'+ ele.id +'"></td><td>' + (i + 1) + '</td><td class="name">' +
+                ele.name + '</td><td>'+ ele.type + '</td><td>'+ ele.texture + '</td><td>'+ market_day + '</td><td>'+ ele.introduction + '</td><td>'+ ele.price + '</td></tr>');
+            $('#topTable').append($tr);
+        });
+    };
+
     function fxk(){
         var cks = document.getElementsByName("ck");
         var cksLength = 0;
@@ -190,7 +225,7 @@
         var list = document.getElementsByName("ck");
         $(list).each(function (i,ele){
             if(ele.checked == true){
-                var id = $(ele).parents("tr").children("td").get(1).innerHTML;
+                var id = ele.value;
                 var name = $(ele).parents("tr").children("td").get(2).innerHTML;
                 var type = $(ele).parents("tr").children("td").get(3).innerHTML;
                 var texture = $(ele).parents("tr").children("td").get(4).innerHTML;
@@ -205,6 +240,31 @@
                 document.querySelector("#editMarketDate").value=market_time;
                 document.getElementById("editIntroduction").value=introduction;
                 document.getElementById("editPrice").value=price;
+                $.ajax({
+                    url:"/infoDetail",
+                    dataType:"json",
+                    type:"get",
+                    data: {
+                        "curtainId":id
+                    },
+                    async:false,
+                    success:function(dataResList){
+                        $(dataResList).each(function (i,res){
+                            var imgDiv = document.getElementById("editResDiv");
+                            var path = res.path;
+                            var type = res.type;
+                            var $td;
+                            console.log("获取到资源信息："+path);
+                            var htmlStr = '<div class="file-temp"> <span class="file-temp-btn" onclick="deleteExistFile(this)">&times;</span>';
+                            if(type  == 1){
+                                htmlStr += '<img style="z-index: 1" width="320" height="240" name="'+ res.name +'" id="'+'res_'+res.id+'" src="' + path + '" alt=""/></div>';
+                            }else if(type == 2){
+                                htmlStr += '<video style="z-index: 1" width="320" height="240" controls="controls" src="' + path +'" id="'+'res_'+res.id+ '" autoplay>'+ res.name +'</video></div>';
+                            }
+                            imgDiv.innerHTML += htmlStr;
+                            fileNames.push(res.name);
+                        });
+                    }});
             };
         });
         fxkDisable();
@@ -216,7 +276,7 @@
         var list = document.getElementsByName("ck");
         $(list).each(function (i,ele){
             if(ele.checked == true){
-                var id = $(ele).parents("tr").children("td").get(1).innerHTML;
+                var id = ele.value;
                 var name = $(ele).parents("tr").children("td").get(2).innerHTML;
                 var type = $(ele).parents("tr").children("td").get(3).innerHTML;
                 var texture = $(ele).parents("tr").children("td").get(4).innerHTML;
@@ -241,16 +301,18 @@
                     async:false,
                     success:function(dataResList){
                         $(dataResList).each(function (i,res){
+                            var imgDiv = document.getElementById("detailResDiv");
                             var path = res.path;
                             var type = res.type;
                             var $td;
                             console.log("获取到资源信息："+path);
+                            var htmlStr = '<div class="file-temp">';
                             if(type  == 1){
-                                $td = $('<td><img width="320" height="240" src="'+path+'"/></td>');
+                                htmlStr += '<img style="z-index: 1" width="320" height="240" src="' + path + '" alt=""/></div>';
                             }else if(type == 2){
-                                $td = $('<td><video width="320" height="240" controls="controls" src="'+path+'" autoplay/></td>');
+                                htmlStr += '<video style="z-index: 1" width="320" height="240" controls="controls" src="' + path +'" autoplay></video></div>';
                             }
-                            $("#detailResTr").append($td);
+                            imgDiv.innerHTML += htmlStr;
                         });
                     }});
             };
@@ -293,7 +355,7 @@
             processData: false,
             type:"post",
             data: fileData,
-            success:function(){
+            success:function(result){
                 $("#addCurtain").hide();
                 document.getElementById("addName").value="";
                 document.getElementById("addType").value="";
@@ -303,9 +365,18 @@
                 document.getElementById("addMarketDate").value="";
                 fxkAble();
                 $("#addResDiv").empty();
+                $("#addResources").empty();
                 trueFiles=[];
                 fileNames=[];
-                window.alert("新增窗帘信息成功！");
+                refreshInfo();
+                console.log(result);
+                var state = result.state;
+                if(state == "200"){
+                    alert("新增窗帘信息成功！");
+                }else if(state == "500"){
+                    alert("新增窗帘信息失败！失败原因："+result.result);
+                }
+
             },
             error:function (res){
                 window.alert("新增窗帘信息失败！"+res);
@@ -315,6 +386,10 @@
     $("#addCancel").click(function (){
         $("#addCurtain").hide();
         fxkAble();
+        $("#addResDiv").empty();
+        trueFiles=[];
+        fileNames=[];
+        $("#addResources").empty();
     });
 
     $("#editConfirm").click(function (){
@@ -327,29 +402,56 @@
         var texture = document.getElementById("editTexture").value;
         var date = document.getElementById("editMarketDate").value;
         if(date == ""){
-            window.alert("请输入日期！");
+            alert("请输入日期！");
             throw "参数缺失！";
         }else if(price == ""){
-            window.alert("请输入价格！");
+            alert("请输入价格！");
+            throw "参数缺失！";
+        }else if(fileNames.length==0){
+            alert("请选择至少一个资源！");
             throw "参数缺失！";
         }
+        var formData = new FormData();
+        formData.append("id",id);
+        formData.append("name",name);
+        formData.append("type",type);
+        formData.append("introduction",introduction);
+        formData.append("price",price);
+        formData.append("texture",texture);
+        formData.append("market_time",new Date(date));
+        for(let i=0;i<trueFiles.length;i++){
+            formData.append("multipartFiles",trueFiles[i]);
+        }
+        formData.append("deletedResIds",deletedIds);
         $.ajax({
             url:"/edit",
-            dataType:"json",
+            contentType:false,
+            processData: false,
             type:"post",
-            data: {
-                "id":id,
-                "name":name,
-                "type":type,
-                "introduction":introduction,
-                "price":price,
-                "texture":texture,
-                "market_time":new Date(date)
-            },
-            success:function(){
+            data: formData,
+            success:function(result){
                 $("#editCurtain").hide();
                 fxkAble();
-                window.alert("编辑窗帘信息成功！");
+                document.getElementById("editId").value="";
+                document.getElementById("editName").value="";
+                document.getElementById("editType").value="";
+                document.getElementById("editIntroduction").value="";
+                document.getElementById("editPrice").value="";
+                document.getElementById("editTexture").value="";
+                document.getElementById("editMarketDate").value="";
+                $("#editResDiv").empty();
+                $("#editResources").empty();
+                trueFiles=[];
+                fileNames=[];
+                deletedIds=[];
+                refreshInfo();
+                console.log(result);
+                var state = result.state;
+                if(state == "200"){
+                    alert("编辑窗帘信息成功！");
+                }else if(state == "500"){
+                    alert("编辑窗帘信息失败！失败原因："+result.result);
+                }
             },
             error:function (res){
                 window.alert("新增窗帘信息失败！"+res);
@@ -358,18 +460,22 @@
     });
     $("#editCancel").click(function (){
         $("#editCurtain").hide();
+        $("#editResDiv").empty();
+        trueFiles=[];
+        fileNames=[];
+        deletedIds=[];
         fxkAble();
     });
 
     $("#detailConfirm").click(function (){
         $("#detailCurtain").hide();
+        $("#detailResDiv").empty();
         fxkAble();
-        $("#detailResTr").empty();
     });
     $("#detailCancel").click(function (){
         $("#detailCurtain").hide();
+        $("#detailResDiv").empty();
         fxkAble();
-        $("#detailResTr").empty();
     });
     function fxkDisable(){
         var list = document.getElementsByName("ck");
@@ -396,7 +502,7 @@
     };
     function buttonAble(){
         document.getElementById("curtainAdd").disabled=false;
-        document.getElementById("curtainDelete").disabled=false;
+        document.getElementById("curtainDelete").disabled=true;
         document.getElementById("curtainEdit").disabled=true;
         document.getElementById("curtainDetail").disabled=true;
     };
@@ -410,8 +516,7 @@
        $(list).each(function (i,ele){
            console.log(i);
            if(ele.checked == true){
-               var id = $(ele).parents("tr").children("td").get(1).innerHTML;
-               var name = $(ele).parents("tr").children("td").get(2).innerHTML;
+               var id = ele.value;
                idChecked.push(id);
                ids += id+",";
            }
@@ -424,8 +529,15 @@
            },
            type:"get",
            dataType:"json",
-           success:function (){
-               window.alert("删除窗帘信息："+ids+"已完成！")
+           success:function (result){
+               console.log(result);
+               var state = result.state;
+               if(state == "200"){
+                   alert("删除窗帘信息成功！");
+               }else if(state == "500"){
+                   alert("删除窗帘信息失败！失败原因："+result.result);
+               }
+               refreshInfo();
            }
        });
     });
@@ -477,8 +589,7 @@
     // 例子：
     // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
     // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
-    Date.prototype.format = function(fmt)
-    { //author: meizz
+    Date.prototype.format = function(fmt) {
         var o = {
             "M+" : this.getMonth()+1,                 //月份
             "d+" : this.getDate(),                    //日
@@ -495,9 +606,15 @@
                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
         return fmt;
     }
-    function addChange(){
-        console.log("新增文件改变！");
-        var file = document.getElementById("addResources");
+    function addChange(itemId){
+        console.log("新增/编辑文件改变！");
+        var file = document.getElementById(itemId);
+        if(itemId == "addResources"){
+            itemId = "addResDiv";
+        }else {
+            itemId = "editResDiv";
+        }
+        console.log(file);
         for(var i=0;i<file.files.length;i++){
             var file1 = file.files[i];
             var extendAll = file1.name.split(".");
@@ -514,22 +631,22 @@
         }
         for(var i=0;i<file.files.length;i++){
             var file1 = file.files[i];
-            addFile(file1);
+            addFile(file1,itemId);
             trueFiles.push(file1);
             fileNames.push(file1.name);
         }
         console.log(trueFiles);
     }
 
-    function addFile(file){
-        var imgDiv = document.getElementById("addResDiv");
+    function addFile(file,itemId){
+        var imgDiv = document.getElementById(itemId);
         let reader = new FileReader();
         var extendAll = file.name.split(".");
         var extend = extendAll[extendAll.length-1].toLowerCase();
         console.log("后缀名称1："+extendAll)
         reader.readAsDataURL (file);
         reader.onload = result => {
-            var htmlStr = '<div class="file-temp"> <span class="file-temp-btn" onclick="deleteFile(this)">&times;</span>';
+            var htmlStr = '<div class="file-temp"> <span class="file-temp-btn" onclick="deleteFile(this,'+itemId+')">&times;</span>';
             //reader对象的result属性存储流读取的数据
             if("jpg" == extend || "png" == extend ){
                 htmlStr += '<img style="z-index: 1" width="320" height="240" name="'+ file.name +'" src="' + reader.result + '" alt=""/></div>';
@@ -540,8 +657,8 @@
         }
     };
 
-    function deleteFile(obj){
-        console.log("删除资源！");
+    function deleteFile(obj,itemId){
+        console.log("删除资源！"+itemId);
         // console.log($(obj).parent().children());
         var nameNode = $(obj).parent().children()[1];
         // console.log(nameNode);
@@ -558,6 +675,41 @@
         console.log(fileNames);
         console.log(trueFiles);
         $(obj).parent().empty();
+        itemId=itemId.id;
+        if(fileNames.length==0){
+            if(itemId=="addResDiv"){
+                $("#addResDiv").empty();
+            }else if(itemId=="editResDiv"){
+                $("#editResDiv").empty();
+            }
+
+        }
+
+    }
+    function deleteExistFile(obj){
+        console.log("删除之前就存在的资源！");
+        // console.log($(obj).parent().children());
+        var nameNode = $(obj).parent().children()[1];
+        // console.log(nameNode);
+        var resId = nameNode.id;
+        var resIds = resId.split("res_");
+        resId = resIds[1];
+        deletedIds.push(resId);
+        var num = fileNames.indexOf(nameNode.name);
+        if(num == -1){
+            num = fileNames.indexOf(nameNode.innerHTML);
+        }
+        if(num != -1){
+            fileNames.splice(num,1);
+        }else {
+            throw "删除文件名称不存在！";
+        }
+        console.log(fileNames);
+        console.log(deletedIds);
+        $(obj).parent().empty();
+        if(fileNames.length==0){
+            $("#editResDiv").empty();
+        }
 
     }
 </script>
