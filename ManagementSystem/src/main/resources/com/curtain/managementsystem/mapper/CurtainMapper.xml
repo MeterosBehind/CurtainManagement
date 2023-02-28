@@ -11,6 +11,8 @@
         <result property="market_time" column="market_time" javaType="Date" jdbcType="TIMESTAMP"/>
         <result property="created_time" column="created_time" javaType="Date" jdbcType="TIMESTAMP"/>
         <result property="last_updated_time" column="last_updated_time" javaType="Date" jdbcType="TIMESTAMP"/>
+        <collection property="resList" javaType="java.util.ArrayList" ofType="com.curtain.managementsystem.domains.Resource"
+                    column="{curtainId=id}" select="getCurtainResMapper"/>
     </resultMap>
 
     <resultMap id="ResourceMap" type="com.curtain.managementsystem.domains.Resource">
@@ -59,7 +61,7 @@
         select * from curtain_info where deleted=0
     </select>
 
-    <select id="getCurtainResMapper" resultMap="ResourceMap" parameterType="int">
+    <select id="getCurtainResMapper" resultMap="ResourceMap">
         select * from res_file where
             deleted = 0 and curtain_id = #{curtainId,jdbcType=INTEGER}
     </select>

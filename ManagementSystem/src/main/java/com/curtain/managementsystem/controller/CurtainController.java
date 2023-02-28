@@ -30,6 +30,11 @@ public class CurtainController {
         return curtainList;
     }
 
+    @GetMapping("/test")
+    @ResponseBody
+    public void test(){
+        System.out.println("十大阿斯顿请问请问111111");
+    }
     @GetMapping("/infoDetail")
     @ResponseBody
     public List<Resource> getCurtainInfoDetail(int curtainId){
