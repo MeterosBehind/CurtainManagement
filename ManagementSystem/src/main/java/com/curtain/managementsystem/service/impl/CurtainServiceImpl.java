@@ -38,6 +38,26 @@ public class CurtainServiceImpl implements CurtainService {
     @Override
     public List<Curtain> getCurtainList() {
         List<Curtain> curtainList = curtainMapper.getCurtainInfoMapper();
+        for(Curtain curtain:curtainList){
+            if(curtain.getResList().size()!=0){
+                for(Resource resource:curtain.getResList()){
+                    resource.setPath(httpPath+resource.getPath());
+                }
+            }
+        }
+        return curtainList;
+    }
+
+    @Override
+    public List<Curtain> getCurtainListShow() {
+        List<Curtain> curtainList = curtainMapper.getCurtainShow();
+        for(Curtain curtain:curtainList){
+            if(curtain.getResList().size()!=0){
+                for(Resource resource:curtain.getResList()){
+                    resource.setPath(httpPath+resource.getPath());
+                }
+            }
+        }
         return curtainList;
     }
 

@@ -1,10 +1,382 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <title>窗帘SHOW</title>
+    <script src="./js/jquery.min.js"></script>
 </head>
+<style type="text/css">
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    ul{
+        list-style: none;
+    }
+    a{
+        text-decoration: none;
+    }
+    #container{
+        position: absolute;
+        width: 100%;
+        height: 75%;
+        overflow: hidden; /*溢出隐藏：只显示一张图片*/
+    }
+    #container .parent{
+        position: absolute;
+        width: 100%; /*整个图片层长度：500*5=2500*/
+        height: 100%;
+    }
+    #container .parent li{
+        float: left;
+        width: 100%;
+        height: 100%;
+    }
+    #container .parent li img{
+        width: 100%;
+        height: 100%;
+    }
+    #container .btnLeft,
+    #container .btnRight{
+        width: 30px;
+        height: 30px;
+        background-color: #9E9E9E;
+        border-radius: 20%;
+        opacity: 80%;
+        position: absolute; /*包含块为图片显示层container*/
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        font-size: 20px;
+        color: #f40;
+        text-align: center;
+        line-height: 30px;
+    }
+    #container .btnLeft{
+        left: 10px;
+    }
+    #container .btnRight{
+        right: 10px;
+    }
+    #container .btnLeft:hover,
+    #container .btnRight:hover{
+        opacity: 90%;
+        cursor: pointer;
+    }
+    /*蒙层*/
+    #container .modal{
+        width: 100%;
+        height: 40px;
+        /*background: rgba(0,0,0,.3);*/
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        line-height: 40px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+    }
+    #container .modal .title{
+        float: left;
+        color: #fff;
+        font-size: 12px;
+    }
+    #container .modal .dots{
+        float: right;
+        position: relative;
+        bottom: 0;
+        left: 0;
+        top: 0;
+        right: 0;
+        margin: auto;
+    }
+    #container .modal .dots li{
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        float: left;
+        /*可以使用行块盒*/
+        /*display: inline-block;*/
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    .clearfix::after{
+        content: "";
+        display: block;
+        clear: both;
+    }
+    .on{
+        background-color: red;
+    }
+    .off{
+        background-color: gray;
+    }
+
+    #container .name{
+        width: 30%;
+        height: 20%;
+        /*background-color:#9E9E9E;*/
+        font-size:3vw;
+        color: #fff;
+        position: absolute;
+        top: 25%;
+        left: 5%;
+    }
+
+    #container .price{
+        width: 30%;
+        height: 20%;
+        /*background-color:#9E9E9E;*/
+        font-size:3vw;
+        color: #fff;
+        position: absolute;
+        top: 40%;
+        left: 5%;
+    }
+
+    #container .introduction{
+        width: 75%;
+        height: 30%;
+        /*background-color:#9E9E9E;*/
+        font-size:3vw;
+        color: #fff;
+        position: absolute;
+        top: 55%;
+        left: 5%;
+    }
+
+    #bottomImgDiv{
+        width: 100%;
+        height: 24%;
+        position: absolute;
+        top: 76%;
+        left: 0;
+    }
+
+    #bottomImgDiv .imgDiv{
+        width: 17.5%;
+        height: 90%;
+        position: relative;
+        top: 0%;
+        left: 0%;
+        margin: 1%;
+    }
+
+</style>
 <body>
+<div id="container">
+    <ul class="parent" style="left: 0;">
+        <li><img id="showImg" src="./res/1.jpg"></li>
+    </ul>
+    <div class="name">花布窗帘</div>
+    <div class="price">100 元/米</div>
+    <div class="introduction">花布窗帘拥有久远的历史，从明朝开始便进入大众的视野，由于其独特的颜色而闻名于世，是很多新人居家必备的良品。</div>
+
+    <div class="btnLeft">&lt;</div>
+    <div class="btnRight">&gt;</div>
+    <div class="modal">
+        <div class="dots">
+            <ul id="btnRadius" class="clearfix">
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="bottomImgDiv">
+    <img class="imgDiv" value="1" onclick="beforePage()" src="./res/1.jpg" />
+    <img class="imgDiv" value="2" onclick="refreshPage(this)" src="./res/2.jpg" />
+    <img class="imgDiv" value="3" onclick="refreshPage(this)" src="./res/3.jpg" />
+    <img class="imgDiv" value="4" onclick="refreshPage(this)" src="./res/4.jpg" />
+    <img class="imgDiv" value="5" onclick="nextPage()" src="./res/5.jpg" />
+</div>
+<script type="text/javascript">
+    let bigImgList = [];
+    let imgList = [];
+    let vidList = [];
+    let currentIndex = 1;//当前播放图片，序号从1开始
+    let bigIndex = 0;//外部所有产品序号，从0开始，用于上方指定到第几个产品
+    let startBigIndex = 0;//下方资源排序第一个的index，用于下方资源列表展示
+    let bigImgSize = 5;//下方资源数量，产品数量低于5才会使用到
+    let dotList,dotLen;
+    let curtainList = [];
+    var btnLeft = document.getElementsByClassName('btnLeft')[0],
+        btnRight = document.getElementsByClassName('btnRight')[0];
+    let name,price,introduction;
+
+    window.onload=function (){
+        $.ajax({
+            url:"http://127.0.0.1:8080/infoShow",
+            dataType:"json",
+            type:"get",
+            async:false,
+            success:function(data){
+                curtainList = data;
+            }});
+        console.log(curtainList);
+        initBigImg();
+        newPage();
+    };
+
+    function initBigImg(){
+        let bottomImgDiv = document.getElementById('bottomImgDiv');
+        if(curtainList.length<5){
+            bigImgSize=curtainList.length;
+            bottomImgDiv.empty();
+        }
+        for(let i = 0;i < curtainList.length;i++){
+            if(bigImgSize < 5){
+                let $img = $('<img class="imgDiv" value="'+(i+1)+'" onclick="refreshPage()" src="" />');
+                bottomImgDiv.append($img);
+            }
+            let resList = curtainList[i].resList;
+            for(let j = 0;j < resList.length;j++){
+                if(resList[j].type==1){
+                    bigImgList.push(resList[j].path);
+                    break;
+                }
+            }
+        }
+        console.log("BigImg："+bigImgList);
+    }
+
+    function newPage(){
+        console.log("startBigIndex:"+startBigIndex+",bigIndex:"+bigIndex)
+        let pageIndex = startBigIndex+bigIndex;
+        let resList = curtainList[pageIndex].resList;
+        name = curtainList[pageIndex].name;
+        price = curtainList[pageIndex].price;
+        introduction = curtainList[pageIndex].introduction;
+        imgList = [];
+        vidList = [];
+        console.log("BeforeImgList："+imgList);
+        console.log("BeforeVidList："+vidList);
+        for(let i=0;i<resList.length;i++){
+            if(resList[i].type==1){
+                imgList.push(resList[i].path);
+            }else {
+                vidList.push(resList[i].path);
+            }
+        }
+        console.log("name:"+name+",price:"+price+",introduction:"+introduction)
+        console.log("imgList："+imgList);
+        console.log("vidList："+vidList);
+        document.getElementsByClassName('name')[0].innerHTML=name;
+        document.getElementsByClassName('price')[0].innerHTML=price;
+        document.getElementsByClassName('introduction')[0].innerHTML=introduction;
+        createRadius();
+        dotList = document.querySelectorAll('.dots >.clearfix > li');
+        dotLen = dotList.length;
+        currentIndex=1;
+        showRadius();
+        let bottomImgList = document.getElementById('bottomImgDiv').getElementsByClassName('imgDiv');
+        for(let i=0;i<bigImgSize;i++){
+            bottomImgList[i].setAttribute("src",bigImgList[i+startBigIndex]);
+        }
+        clickRadius();
+        clearInterval(timer);
+        autoPlay();
+    }
+
+    function beforePage(){
+        if(bigIndex==0){
+            startBigIndex--;
+            if(startBigIndex<0){
+                startBigIndex=0;
+            }
+        }else {
+            bigIndex=0;
+        }
+        newPage();
+    }
+
+    function refreshPage(obj){
+        console.log($(obj).attr("value"))
+        bigIndex = $(obj).attr("value")-1;
+        newPage();
+    }
+
+    function nextPage(){
+        if(bigIndex==bigImgSize-1){
+            startBigIndex++;
+            if(startBigIndex>bigImgList.length-bigImgSize){
+                startBigIndex=bigImgList.length-bigImgSize;
+            }
+        }else {
+            bigIndex=bigImgSize-1;
+        }
+        newPage();
+    }
+
+    //初始化创建所需的圆点
+    function createRadius(){
+        $("#btnRadius").empty();
+        let $li1 = $('<li class="on" value="1"></li>');
+        $('#btnRadius').append($li1);
+        console.log("imgList.length:"+imgList.length)
+        if(imgList.length > 1){
+            for(let i = 0; i < imgList.length-1; i++) {
+                let $li = $('<li class="off" value="'+ (i+2) +'"></li>');
+                $('#btnRadius').append($li);
+            }
+        }
+    }
+
+    function clickRadius(){
+        let list = document.querySelectorAll('.dots >.clearfix > li')
+        for (let i = 0; i < list.length; i++) {
+            list[i].onclick = (function (index) {
+                return function () {
+                    console.log(index);
+                    currentIndex = index+1;
+                    showRadius();
+                }
+            })(i)
+        }
+    }
+
+
+    //圆点显示，修改显示资源
+    function showRadius() {
+        document.getElementById("showImg").setAttribute("src",imgList[currentIndex-1]);
+        for(var i = 0; i < dotLen; i++) {
+            if(dotList[i].className === "on"){
+                dotList[i].className = "off";
+            }
+        }
+        console.log("当前Index："+currentIndex);
+        dotList[currentIndex-1].className = "on";
+    }
+
+    //向左移动
+    btnLeft.onclick = function() {
+        currentIndex--;
+        if(currentIndex <= 0){  /*第1张向左时，变为最后一张*/
+            currentIndex = imgList.length;
+        }
+        showRadius();
+    }
+
+    //向右移动
+    btnRight.onclick = function() {
+        currentIndex++;
+        if(currentIndex > imgList.length){/*最后一张向右时，变为第一张*/
+            currentIndex = 1;
+        }
+        showRadius();
+    }
+
+    // 自动轮播
+    var timer;
+    function autoPlay() {
+        timer = setInterval(function() {
+            currentIndex++;
+            if(currentIndex > imgList.length){/*最后一张向右时，变为第一张*/
+                currentIndex = 1;
+            }
+            showRadius();
+        } ,10000)
+    }
+
+</script>
 
 </body>
 </html>

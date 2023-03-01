@@ -10,6 +10,8 @@ import java.util.List;
 public interface CurtainMapper {
     List<Curtain> getCurtainInfoMapper();
 
+    List<Curtain> getCurtainShow();
+
     List<Resource> getCurtainResMapper(int curtainId);
 
     void addCurtain(Curtain curtain);

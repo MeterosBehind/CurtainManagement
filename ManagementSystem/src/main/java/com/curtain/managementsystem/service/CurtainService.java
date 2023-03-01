@@ -10,6 +10,8 @@ import java.util.List;
 public interface CurtainService {
     List<Curtain> getCurtainList();
 
+    List<Curtain> getCurtainListShow();
+
     List<Resource> getCurtainResList(int curtainId);
 
     String addCurtain(Curtain curtain, MultipartFile[] multipartFiles);

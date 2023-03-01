@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Controller
+@CrossOrigin(origins = "*",maxAge = 3600)
 public class CurtainController {
 
     @Autowired
@@ -27,6 +28,13 @@ public class CurtainController {
     @ResponseBody
     public List<Curtain> getCurtainInfo(){
         List<Curtain> curtainList = curtainService.getCurtainList();
+        return curtainList;
+    }
+
+    @GetMapping("/infoShow")
+    @ResponseBody
+    public List<Curtain> getCurtainInfoShow(){
+        List<Curtain> curtainList = curtainService.getCurtainListShow();
         return curtainList;
     }
 
