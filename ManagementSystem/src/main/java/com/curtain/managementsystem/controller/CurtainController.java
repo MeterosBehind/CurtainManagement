@@ -95,4 +95,20 @@ public class CurtainController {
         }
         return resultMap;
     }
+
+    @GetMapping("/deleteRes")
+    @ResponseBody
+    public HashMap<String,Object> deleteRes(int resId){
+        String result = curtainService.deleteRes(resId);
+        HashMap<String,Object> resultMap = new HashMap<>();
+        if(result==null){
+            resultMap.put("state",200);
+            resultMap.put("result","单个资源删除成功！");
+        }else {
+            resultMap.put("state",500);
+            resultMap.put("result",result);
+        }
+        return resultMap;
+    }
+
 }

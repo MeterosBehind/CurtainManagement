@@ -710,6 +710,17 @@
         if(fileNames.length==0){
             $("#editResDiv").empty();
         }
+        $.ajax({
+            url:"/deleteRes",
+            dataType:"json",
+            type:"get",
+            data: {
+                "resId":resId
+            },
+            async:false,
+            success:function(resultList){
+                console.log("删除资源成功！")
+            }});
 
     }
 </script>

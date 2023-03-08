@@ -120,6 +120,17 @@ public class CurtainServiceImpl implements CurtainService {
         return null;
     }
 
+    @Override
+    public String deleteRes(int resId) {
+        try{
+            curtainMapper.deleteResById(resId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return e.getMessage();
+        }
+        return null;
+    }
+
     void handResources(Curtain curtain,MultipartFile[] multipartFiles){
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR),month = now.get(Calendar.MONTH)+1,day=now.get(Calendar.DAY_OF_MONTH);

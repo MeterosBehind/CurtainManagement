@@ -19,4 +19,6 @@ public interface CurtainService {
     String editCurtain(Curtain curtain, MultipartFile[] multipartFiles,String deletedIds);
 
     String deleteCurtains(String curtainIds);
+
+    String deleteRes(int resId);
 }

@@ -145,6 +145,26 @@
         left: 5%;
     }
 
+    #container .video{
+        width: 15%;
+        height: 25%;
+        font-size:3vw;
+        color: #fff;
+        position: absolute;
+        top: 60%;
+        right: 5%;
+    }
+
+    #container .videoIntroduce{
+        width: 14%;
+        height: 10%;
+        font-size:1.5vw;
+        color: #d4d4d4;
+        position: absolute;
+        top: 85%;
+        right: 2.3%;
+    }
+
     #bottomImgDiv{
         width: 100%;
         height: 24%;
@@ -170,6 +190,10 @@
     </ul>
     <div class="name">花布窗帘</div>
     <div class="price">100 元/米</div>
+    <div class="video">
+        <video id="introduceVideo" width="100%" height="100%" src="http://172.16.210.158:8090/mips/curtainRes/2023/3/8/aoto4.mp4" controls autoplay/>
+    </div>
+    <div class="videoIntroduce">介 绍 视 频</div>
     <div class="introduction">花布窗帘拥有久远的历史，从明朝开始便进入大众的视野，由于其独特的颜色而闻名于世，是很多新人居家必备的良品。</div>
 
     <div class="btnLeft">&lt;</div>
@@ -217,15 +241,15 @@
     };
 
     function initBigImg(){
-        let bottomImgDiv = document.getElementById('bottomImgDiv');
         if(curtainList.length<5){
             bigImgSize=curtainList.length;
-            bottomImgDiv.empty();
+            $("#bottomImgDiv").empty();
         }
         for(let i = 0;i < curtainList.length;i++){
             if(bigImgSize < 5){
-                let $img = $('<img class="imgDiv" value="'+(i+1)+'" onclick="refreshPage()" src="" />');
-                bottomImgDiv.append($img);
+                let img = $('<img class="imgDiv" value="'+(i+1)+'" onclick="refreshPage(this)" src="" />');
+                console.log("$img:"+img);
+                $("#bottomImgDiv").append(img);
             }
             let resList = curtainList[i].resList;
             for(let j = 0;j < resList.length;j++){
@@ -260,7 +284,7 @@
         console.log("imgList："+imgList);
         console.log("vidList："+vidList);
         document.getElementsByClassName('name')[0].innerHTML=name;
-        document.getElementsByClassName('price')[0].innerHTML=price;
+        document.getElementsByClassName('price')[0].innerHTML=price+" 元/米";
         document.getElementsByClassName('introduction')[0].innerHTML=introduction;
         createRadius();
         dotList = document.querySelectorAll('.dots >.clearfix > li');
@@ -270,6 +294,9 @@
         let bottomImgList = document.getElementById('bottomImgDiv').getElementsByClassName('imgDiv');
         for(let i=0;i<bigImgSize;i++){
             bottomImgList[i].setAttribute("src",bigImgList[i+startBigIndex]);
+        }
+        if(vidList.length!=0){
+            document.getElementById("introduceVideo").setAttribute("src",vidList[0]);
         }
         clickRadius();
         clearInterval(timer);

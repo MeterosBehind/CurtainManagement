@@ -29,4 +29,6 @@ public interface CurtainMapper {
     void deleteCurtains(String curtainIds);
 
     void deleteCurtainRes(String curtainIds);
+
+    void deleteResById(int resId);
 }

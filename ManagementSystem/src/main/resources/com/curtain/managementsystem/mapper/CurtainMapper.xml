@@ -56,6 +56,9 @@
     <update id="deleteCurtainRes" parameterType="string">
         update res_file set deleted=1 where find_in_set(curtain_id,#{curtainIds,jdbcType=VARCHAR})
     </update>
+    <update id="deleteResById" parameterType="int">
+        update res_file set deleted=1 where file_id=#{resId}
+    </update>
 
     <select id="getCurtainInfoMapper" resultMap="CurtainMap">
         select * from curtain_info where deleted=0
